@@ -24,7 +24,7 @@ function installYarn(){
 }
 
 function installDeps(){
-	yarn install --checkfiles
+	yarn install --checkfiles --frozen-lockfile
 }
 
 function installAwsCdk(){
@@ -107,10 +107,11 @@ ${output}
 function main(){
 	parseInputs
 	checkRequirements
-	cd "${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}"
 	installYarn
-	installDeps
 	installAwsCdk
+	cd "${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}"
+	ls -la
+	installDeps
 	installPipRequirements
 	runCdk "${INPUT_CDK_ARGS}"
 }
