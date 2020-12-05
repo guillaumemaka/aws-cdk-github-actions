@@ -20,23 +20,13 @@ function parseInputs(){
 			exit 1
 		fi
 	fi
-}
 
-checkRequirements() {
 	if [ ! -d "${INPUT_WORKING_DIR}" ]; then
 		if [ ! -e "${GITHUB_WORKSPACE}/${INPUT_WORKING_DIR}/cdk.json" ]; then
 			echo "${GITHUB_WORKSPACE}/${INPUT_WORKING_DIR}/cdk.json does not exit!";
 			exit 1;
 		fi
 	fi
-}
-
-function installYarn(){
-	npm install -g yarn
-}
-
-function installDeps(){
-	yarn install --checkfiles --frozen-lockfile
 }
 
 function installAwsCdk(){
@@ -128,12 +118,9 @@ ${output}
 
 function main(){
 	parseInputs
-	checkRequirements
-	installYarn
 	installAwsCdk
-	cd "${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}" || exit 1
-	installDeps
 	installPipRequirements
+	cd "${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}" || exit 1
 	runCdk "${INPUT_CDK_ARGS}"
 }
 
