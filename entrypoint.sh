@@ -10,17 +10,30 @@ function parseInputs(){
 	fi
 }
 
-function installTypescript(){
-	npm install typescript
+checkRequirements() {
+	if [ ! -d "${INPUT_WORKING_DIR}" ]; then
+		if [ ! -e "${GITHUB_WORKSPACE}/${INPUT_WORKING_DIR}/cdk.json" ]; then
+			echo "${GITHUB_WORKSPACE}/${INPUT_WORKING_DIR}/cdk.json does not exit!";
+			exit 1;
+		fi
+	fi
+}
+
+function installYarn(){
+	npm install -g yarn
+}
+
+function installDeps(){
+	yarn install --checkfiles
 }
 
 function installAwsCdk(){
 	echo "Install aws-cdk ${INPUT_CDK_VERSION}"
 	if [ "${INPUT_CDK_VERSION}" == "latest" ]; then
 		if [ "${INPUT_DEBUG_LOG}" == "true" ]; then
-			npm install -g aws-cdk
+			yarn glonal add aws-cdk
 		else
-			npm install -g aws-cdk >/dev/null 2>&1
+			yarn glonal add aws-cdk >/dev/null 2>&1
 		fi
 
 		if [ "${?}" -ne 0 ]; then
@@ -30,9 +43,9 @@ function installAwsCdk(){
 		fi
 	else
 		if [ "${INPUT_DEBUG_LOG}" == "true" ]; then
-			npm install -g aws-cdk@${INPUT_CDK_VERSION}
+			yarn glonal add -g aws-cdk@"${INPUT_CDK_VERSION}"
 		else
-			npm install -g aws-cdk@${INPUT_CDK_VERSION} >/dev/null 2>&1
+			yarn glonal add aws-cdk@"${INPUT_CDK_VERSION}" >/dev/null 2>&1
 		fi
 
 		if [ "${?}" -ne 0 ]; then
@@ -62,13 +75,13 @@ function installPipRequirements(){
 
 function runCdk(){
 	echo "Run cdk ${INPUT_CDK_SUBCOMMAND} ${*} \"${INPUT_CDK_STACK}\""
-	output=$(cdk ${INPUT_CDK_SUBCOMMAND} ${*} "${INPUT_CDK_STACK}" 2>&1)
+	output=$(cdk "${INPUT_CDK_SUBCOMMAND}" "${*}" "${INPUT_CDK_STACK}" 2>&1)
 	exitCode=${?}
 	echo ::set-output name=status_code::${exitCode}
 	echo "${output}"
 
 	commentStatus="Failed"
-	if [ "${exitCode}" == "0" -o "${exitCode}" == "1" ]; then
+	if [ "${exitCode}" == "0" ] || [ "${exitCode}" == "1" ]; then
 		commentStatus="Success"
 	fi
 
@@ -84,8 +97,8 @@ ${output}
 
 *Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`, Working Directory: \`${INPUT_WORKING_DIR}\`*"
 
-		payload=$(echo "${commentWrapper}" | jq -R --slurp '{body: .}')
-		commentsURL=$(cat ${GITHUB_EVENT_PATH} | jq -r .pull_request.comments_url)
+		payload=$(echo "${commentWrapper}" | jq -R --slurp "{body: .}")
+		commentsURL=$(cat "${GITHUB_EVENT_PATH}" | jq -r .pull_request.comments_url)
 
 		echo "${payload}" | curl -s -S -H "Authorization: token ${GITHUB_TOKEN}" --header "Content-Type: application/json" --data @- "${commentsURL}" > /dev/null
 	fi
@@ -93,11 +106,13 @@ ${output}
 
 function main(){
 	parseInputs
-	cd ${GITHUB_WORKSPACE}/${INPUT_WORKING_DIR}
-	installTypescript
+	checkRequirements
+	cd "${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}"
+	installYarn
+	installDeps
 	installAwsCdk
 	installPipRequirements
-	runCdk ${INPUT_CDK_ARGS}
+	runCdk "${INPUT_CDK_ARGS}"
 }
 
 main
