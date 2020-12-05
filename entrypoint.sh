@@ -76,7 +76,7 @@ function installPipRequirements(){
 function runCdk(){
 	echo "Run cdk ${INPUT_CDK_SUBCOMMAND} ${*} \"${INPUT_CDK_STACK}\""
 	subCommand=${INPUT_CDK_SUBCOMMAND}
-	if [ "${INPUT_CDK_SUBCOMMAND}" == "bootstrap" ]; then
+	if [ "$INPUT_CDK_SUBCOMMAND" == "bootstrap" ]; then
 		output=$(cdk "${subCommand}" "${*}" 2>&1)
 	else
 		output=$(cdk "${subCommand}" "${*}" "${INPUT_CDK_STACK}" 2>&1)
@@ -114,10 +114,7 @@ function main(){
 	checkRequirements
 	installYarn
 	installAwsCdk
-
-	echo "Cdk Project Path: ${GITHUB_WORKSPACE}/${INPUT_WORKING_DIR}"
 	cd "${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}" || exit 1
-	ls -lah
 	installDeps
 	installPipRequirements
 	runCdk "${INPUT_CDK_ARGS}"
