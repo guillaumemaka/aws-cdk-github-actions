@@ -8,6 +8,18 @@ function parseInputs(){
 		echo "Input cdk_subcommand cannot be empty"
 		exit 1
 	fi
+
+	if [ "${INPUT_CDK_SUBCOMMAND}" == "bootstrap" ]; then
+		if [ "${AWS_ACCOUNT_ID}" == "" ]; then
+			echo "Input aws_account_id cannot be empty"
+			exit 1
+		fi
+		
+		if [ "${AWS_DEFAULT_REGION}" == "" ]; then
+			echo "Input aws_default_region cannot be empty"
+			exit 1
+		fi
+	fi
 }
 
 checkRequirements() {
@@ -74,10 +86,15 @@ function installPipRequirements(){
 }
 
 function runCdk(){
-	echo "Run cdk ${INPUT_CDK_SUBCOMMAND} ${*} \"${INPUT_CDK_STACK}\""
+	if [ "${INPUT_CDK_SUBCOMMAND}" == "bootstrap" ]; then
+		echo "Run cdk ${INPUT_CDK_SUBCOMMAND} aws://$AWS_ACCOUNT_ID/$AWS_DEFAULT_REGION ${*}"
+	else
+		echo "Run cdk ${INPUT_CDK_SUBCOMMAND} ${*} \"${INPUT_CDK_STACK}\""
+	fi
+	
 	subCommand=${INPUT_CDK_SUBCOMMAND}
-	if [ "$INPUT_CDK_SUBCOMMAND" == "bootstrap" ]; then
-		output=$(cdk "${subCommand}" "${*}" 2>&1)
+	if [ "${INPUT_CDK_SUBCOMMAND}" == "bootstrap" ]; then
+		output=$(cdk "${subCommand}" "aws://$AWS_ACCOUNT_ID/$AWS_DEFAULT_REGION" "${*}" 2>&1)
 	else
 		output=$(cdk "${subCommand}" "${*}" "${INPUT_CDK_STACK}" 2>&1)
 	fi
