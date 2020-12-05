@@ -117,7 +117,7 @@ function main(){
 
 	echo "Cdk Project Path: ${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}"
 	cd "${GITHUB_WORKSPACE}"/"${INPUT_WORKING_DIR}"
-	ls -la
+	ls -lah
 	installDeps
 	installPipRequirements
 	runCdk "${INPUT_CDK_ARGS}"
