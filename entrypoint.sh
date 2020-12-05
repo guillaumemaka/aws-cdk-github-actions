@@ -31,9 +31,9 @@ function installAwsCdk(){
 	echo "Install aws-cdk ${INPUT_CDK_VERSION}"
 	if [ "${INPUT_CDK_VERSION}" == "latest" ]; then
 		if [ "${INPUT_DEBUG_LOG}" == "true" ]; then
-			yarn glonal add aws-cdk
+			yarn global add aws-cdk
 		else
-			yarn glonal add aws-cdk >/dev/null 2>&1
+			yarn global add aws-cdk >/dev/null 2>&1
 		fi
 
 		if [ "${?}" -ne 0 ]; then
@@ -43,9 +43,9 @@ function installAwsCdk(){
 		fi
 	else
 		if [ "${INPUT_DEBUG_LOG}" == "true" ]; then
-			yarn glonal add -g aws-cdk@"${INPUT_CDK_VERSION}"
+			yarn global add -g aws-cdk@"${INPUT_CDK_VERSION}"
 		else
-			yarn glonal add aws-cdk@"${INPUT_CDK_VERSION}" >/dev/null 2>&1
+			yarn global add aws-cdk@"${INPUT_CDK_VERSION}" >/dev/null 2>&1
 		fi
 
 		if [ "${?}" -ne 0 ]; then
