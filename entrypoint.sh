@@ -83,6 +83,7 @@ function runCdk(){
 	fi
 	
 	subCommand=${INPUT_CDK_SUBCOMMAND}
+	output=""
 	if [ "${INPUT_CDK_SUBCOMMAND}" == "bootstrap" ]; then
 		# output=$(cdk "${subCommand}" "aws://$AWS_ACCOUNT_ID/$AWS_DEFAULT_REGION" "${*}" 2>&1)
 		echo "cdk ${subCommand} aws://$AWS_ACCOUNT_ID/$AWS_DEFAULT_REGION ${*} 2>&1"
