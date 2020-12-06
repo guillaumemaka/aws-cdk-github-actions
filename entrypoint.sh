@@ -83,13 +83,10 @@ function runCdk(){
 	fi
 	
 	subCommand=${INPUT_CDK_SUBCOMMAND}
-	output=""
 	if [ "${INPUT_CDK_SUBCOMMAND}" == "bootstrap" ]; then
-		# output=$(cdk "${subCommand}" "aws://$AWS_ACCOUNT_ID/$AWS_DEFAULT_REGION" "${*}" 2>&1)
-		echo "cdk ${subCommand} aws://$AWS_ACCOUNT_ID/$AWS_DEFAULT_REGION ${*} 2>&1"
+		output=$(cdk "${subCommand}" "aws://$AWS_ACCOUNT_ID/$AWS_DEFAULT_REGION" "${*}" 2>&1)
 	else
-		# output=$(cdk "${subCommand}" "${*}" "${INPUT_CDK_STACK}" 2>&1)
-		echo "cdk ${subCommand} ${*} ${INPUT_CDK_STACK} 2>&1"
+		output=$(cdk "${subCommand}" "${*}" "${INPUT_CDK_STACK}" 2>&1)
 	fi
 	exitCode=${?}
 	echo ::set-output name=status_code::${exitCode}
